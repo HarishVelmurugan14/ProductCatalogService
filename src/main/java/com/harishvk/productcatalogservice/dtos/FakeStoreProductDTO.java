@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductDto {
-    private Long id;
-    private String name;
+public class FakeStoreProductDTO {
+    private String title;
     private String description;
-    private String imageUrl;
+    private String category;
     private Double price;
-    private CategoryDto category;
+    private Long id;
+    private String image;
 }

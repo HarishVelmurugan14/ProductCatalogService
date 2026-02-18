@@ -1,7 +1,7 @@
 package com.harishvk.productcatalogservice.controllers;
 
 import com.harishvk.productcatalogservice.dtos.CategoryDto;
-import com.harishvk.productcatalogservice.dtos.ProductDto;
+import com.harishvk.productcatalogservice.dtos.ProductDTO;
 import com.harishvk.productcatalogservice.models.Product;
 import com.harishvk.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 public class ProductController {
 
@@ -18,9 +21,19 @@ public class ProductController {
     IProductService productService;
 
     @GetMapping("/product/{id}")
-    private ProductDto getProductById(@PathVariable Long id){
+    private ProductDTO getProductById(@PathVariable Long id){
         Product product = productService.getProductById(id);
         return convertProductToDto(product);
+    }
+
+    @GetMapping("/products")
+    private List<ProductDTO> getAllProducts(){
+        List<Product> products = productService.getAllProducts();
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        for(Product product:products){
+            productDTOs.add(convertProductToDto(product));
+        }
+        return productDTOs;
     }
 
     @PostMapping("/product")
@@ -28,8 +41,8 @@ public class ProductController {
         return product;
     }
 
-    private ProductDto convertProductToDto(Product product) {
-        ProductDto productDto = new ProductDto();
+    private ProductDTO convertProductToDto(Product product) {
+        ProductDTO productDto = new ProductDTO();
         productDto.setName(product.getName());
         productDto.setId(product.getId());
         productDto.setDescription(product.getDescription());
