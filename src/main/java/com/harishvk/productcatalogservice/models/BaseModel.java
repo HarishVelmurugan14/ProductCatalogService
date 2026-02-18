@@ -3,11 +3,13 @@ package com.harishvk.productcatalogservice.models;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public abstract class BaseModel {
-    int id;
-    int createdAt;
-    int lastModifiedAt;
-    Status status;
+    private Long id;
+    private Date createdAt;
+    private Date lastUpdatedAt;
+    private Status status;
 }
