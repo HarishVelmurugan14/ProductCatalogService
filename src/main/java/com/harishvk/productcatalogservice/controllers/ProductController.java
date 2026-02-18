@@ -1,4 +1,4 @@
-package com.harishvk.productcatalogservice.controller;
+package com.harishvk.productcatalogservice.controllers;
 
 import com.harishvk.productcatalogservice.models.Product;
 import org.springframework.web.bind.annotation.GetMapping;
