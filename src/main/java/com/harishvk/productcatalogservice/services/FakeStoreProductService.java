@@ -1,15 +1,19 @@
 package com.harishvk.productcatalogservice.services;
 
 import com.harishvk.productcatalogservice.dtos.FakeStoreProductDTO;
-import com.harishvk.productcatalogservice.dtos.ProductDTO;
 import com.harishvk.productcatalogservice.models.Category;
 import com.harishvk.productcatalogservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -45,6 +49,36 @@ public class FakeStoreProductService implements IProductService {
         return products;
     }
 
+    @Override
+    public Product replaceProductById(Long id, Product product) {
+        FakeStoreProductDTO input = convertProductToDTO(product);
+        ResponseEntity<FakeStoreProductDTO> responseEntity = requestForEntity(HttpMethod.PUT, "https://fakestoreapi.com/products/{id}", input, FakeStoreProductDTO.class, id);
+        if(responseEntity.hasBody() && responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null){
+            return convertDtoToProduct(responseEntity.getBody());
+        }
+        return null;
+    }
+
+    public <T> ResponseEntity<T> requestForEntity(HttpMethod method, String url, @Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
+        RestTemplate restTemplate =  restTemplateBuilder.build();
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
+        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
+        return restTemplate.execute(url, method, requestCallback, responseExtractor, uriVariables);
+    }
+
+
+    private FakeStoreProductDTO convertProductToDTO(Product product) {
+        FakeStoreProductDTO fakeStoreDTO = new FakeStoreProductDTO();
+        fakeStoreDTO.setId(product.getId());
+        fakeStoreDTO.setTitle(product.getName());
+        fakeStoreDTO.setDescription(product.getDescription());
+        fakeStoreDTO.setPrice(product.getPrice());
+        fakeStoreDTO.setImage(product.getImageUrl());
+        if(product.getCategory() != null){
+            fakeStoreDTO.setCategory(product.getCategory().getName());
+        }
+        return fakeStoreDTO;
+    }
 
     private Product convertDtoToProduct(FakeStoreProductDTO fakeStoreProductDto) {
         Product product = new Product();
